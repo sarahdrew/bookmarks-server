@@ -1,3 +1,4 @@
+-- from solution, don't know SQL
 INSERT INTO bookmarks (id, title, url, rating, description)
 VALUES
   (1, 'Thinkful', 'https://www.thinkful.com', '5', 'Think outside the classroom'),
