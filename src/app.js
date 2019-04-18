@@ -19,6 +19,10 @@ app.use(cors());
 app.use(helmet());
 app.use(validateBearerToken);
 
+app.get('/articles', (req, res, next) => {
+  res.send('All articles')
+})
+
 //add router
 app.use(bookmarksRouter);
 
