@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
+const bookmarksService = require('./bookmarks-service');
 const validateBearerToken = require("./validate-bearer-token");
 const errorHandler = require("./error-handler");
 const bookmarksRouter = require("./bookmarks/bookmarks-router");
@@ -19,9 +20,7 @@ app.use(cors());
 app.use(helmet());
 app.use(validateBearerToken);
 
-app.get('/articles', (req, res, next) => {
-  res.send('All articles')
-})
+
 
 //add router
 app.use(bookmarksRouter);
@@ -29,6 +28,16 @@ app.use(bookmarksRouter);
 app.get("/", (req, res) => {
   res.send("Hello, world!");
 });
+
+app.get('/bookmarks', (req, res, next) => {
+  const knexInstance = req.app.get('db')
+  bookmarksService.getAllBookmarks(knexInstance)
+    .then(articles => {
+      res.json(articles)
+    })
+    .catch(next)
+})
+
 //add error handler
 app.use(errorHandler);
 

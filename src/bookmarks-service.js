@@ -1,11 +1,11 @@
 //file to store ArticlesService object and put methods on the object that store our transactions
 const BookmarksService = {
-    getAllArticles(knex) {
+    getAllBookmarks(knex) {
         return knex
             .select('*')
             .from('bookmarks')
     },
-    insertArticle(knex, newbookmark) {
+    insertBookmark(knex, newbookmark) {
         return knex
             .insert(newbookmark)
             .into('bookmarks')
@@ -17,12 +17,12 @@ const BookmarksService = {
     getById(knex, id) {
         return knex.from('bookmarks').select('*').where('id', id).first()
     },
-    deleteArticle(knex, id) {
+    deleteBookmark(knex, id) {
         return knex('bookmarks')
             .where({ id })
             .delete()
     },
-    updateArticle(knex, id, newBookmarkFields) {
+    updateBookmark(knex, id, newBookmarkFields) {
         return knex('bookmarks')
             .where({ id })
             .update(newBookmarkFields)
