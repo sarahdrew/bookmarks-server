@@ -38,6 +38,15 @@ app.get('/bookmarks', (req, res, next) => {
     .catch(next)
 })
 
+app.get('/bookmarks/:bookmark_id', (req, res, next) => {
+  const knexInstance = req.app.get('db')
+  ArticlesService.getById(knexInstance, req.params.article_id)
+    .then(article => {
+      res.json(article)
+    })
+    .catch(next)
+})
+
 //add error handler
 app.use(errorHandler);
 
