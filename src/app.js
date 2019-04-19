@@ -32,17 +32,22 @@ app.get("/", (req, res) => {
 app.get('/bookmarks', (req, res, next) => {
   const knexInstance = req.app.get('db')
   bookmarksService.getAllBookmarks(knexInstance)
-    .then(articles => {
-      res.json(articles)
+    .then(bookmarks => {
+      if (!bookmarks) {
+        return res.status(404).json({
+          error: { message: `Bookmark doesn't exist` }
+        })
+      }
+      res.json(bookmarks)
     })
     .catch(next)
 })
 
 app.get('/bookmarks/:bookmark_id', (req, res, next) => {
   const knexInstance = req.app.get('db')
-  ArticlesService.getById(knexInstance, req.params.article_id)
-    .then(article => {
-      res.json(article)
+  BookmarksService.getById(knexInstance, req.params.bookmark_id)
+    .then(bookmark => {
+      res.json(bookmark)
     })
     .catch(next)
 })

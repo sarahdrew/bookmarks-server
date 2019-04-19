@@ -1,6 +1,7 @@
 const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
+const { makeBookmarksArray } = require('./bookmarks.fixtures')
 
 describe.only('Bookmarks Endpoints', function () {
   let db
@@ -15,59 +16,59 @@ describe.only('Bookmarks Endpoints', function () {
 
   after('disconnect from db', () => db.destroy())
 
-  before('clean the table', () => db('bookmarks').truncate())
+  before('clean the table', () => db('blogful_bookmarks').truncate())
 
-  afterEach('cleanup', () => db('bookmarks').truncate())
+  afterEach('cleanup', () => db('blogful_bookmarks').truncate())
 
-  context('Given there are bookmarks in the database', () => {
-    const testBookmarks = [
-      {
-        id: 1,
-        title: 'First test bookmark!',
-        url: 'http://www.google.com',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-        rating: 2
-      },
-      {
-        id: 2,
-        title: 'Second test bookmark',
-        url: 'http://www.google.com',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-        rating: 2
-      },
-      {
-        id: 3,
-        title: 'third test!',
-        url: 'http://www.google.com',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-        rating: 2
-      },
-      {
-        id: 4,
-        title: 'fourth test!',
-        url: 'http://www.google.com',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-        rating: 2
-      },
-    ];
-
-    beforeEach('insert bookmarks', () => {
-      return db
-        .into('bookmarks')
-        .insert(testBookmarks)
+  describe(`GET /bookmarks`, () => {
+    context(`Given no bookmarks`, () => {
+      it(`responds with 200 and an empty list`, () => {
+        return supertest(app)
+          .get('/bookmarks')
+          .expect(200, [])
+      })
     })
-    it('GET /bookmarks responds with 200 and all of the bookmarks', () => {
-      return supertest(app)
-        .get('/bookmarks')
-        .expect(200, testBookmarks)
+    context('Given there are bookmarks in the database', () => {
+      const testbookmarks = makebookmarksArray()
 
-    })
-    it('GET /bookmark/:bookmark_id responds with 200 and the specified bookmark', () => {
-      const bookmarkId = 2
-      const expectedBookmarks = testBookmarks[bookmarkId - 1]
-      return supertest(app)
-        .get(`/bookmarks/${bookmarkId}`)
-        .expect(200, expectedBookmarks)
+      beforeEach('insert bookmarks', () => {
+        return db
+          .into('blogful_bookmarks')
+          .insert(testbookmarks)
+      })
+
+      it('responds with 200 and all of the bookmarks', () => {
+        return supertest(app)
+          .get('/bookmarks')
+          .expect(200, testbookmarks)
+      })
     })
   })
-})
+
+  describe(`GET /bookmarks/:bookmark_id`, () => {
+    context(`Given no bookmarks`, () => {
+      it(`responds with 404`, () => {
+        const bookmarkId = 123456
+        return supertest(app)
+          .get(`/articles/${bookmarkId}`)
+          .expect(404, { error: { message: `Bookmark doesn't exist` } })
+      })
+    })
+    context('Given there are bookmarks in the database', () => {
+      const testbookmarks = makebookmarksArray()
+
+      beforeEach('insert bookmarks', () => {
+        return db
+          .into('bookmarks')
+          .insert(testbookmarks)
+      })
+
+      it('responds with 200 and the specified bookmark', () => {
+        const bookmarkId = 2
+        const expectedBookmark = testbookmarks[bookmarkId - 1]
+        return supertest(app)
+          .get(`/bookmarks/${bookmarkId}`)
+          .expect(200, expectedBookmark)
+      })
+    })
+  })

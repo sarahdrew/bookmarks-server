@@ -1,4 +1,4 @@
-//file to store ArticlesService object and put methods on the object that store our transactions
+//file to store bookmarksService object and put methods on the object that store our transactions
 const BookmarksService = {
     getAllBookmarks(knex) {
         return knex
