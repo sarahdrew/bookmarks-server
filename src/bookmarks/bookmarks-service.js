@@ -1,21 +1,18 @@
-//file to store bookmarksService object and put methods on the object that store our transactions
 const BookmarksService = {
     getAllBookmarks(knex) {
-        return knex
-            .select('*')
-            .from('bookmarks')
+        return knex.select('*').from('bookmarks')
     },
-    insertBookmark(knex, newbookmark) {
+    getById(knex, id) {
+        return knex.from('bookmarks').select('*').where('id', id).first()
+    },
+    insertBookmark(knex, newBookmark) {
         return knex
-            .insert(newbookmark)
+            .insert(newBookmark)
             .into('bookmarks')
             .returning('*')
             .then(rows => {
                 return rows[0]
             })
-    },
-    getById(knex, id) {
-        return knex.from('bookmarks').select('*').where('id', id).first()
     },
     deleteBookmark(knex, id) {
         return knex('bookmarks')
@@ -26,7 +23,7 @@ const BookmarksService = {
         return knex('bookmarks')
             .where({ id })
             .update(newBookmarkFields)
-    }
+    },
 }
 
 module.exports = BookmarksService
